@@ -1,0 +1,298 @@
+CREATE TABLE users (
+    user_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
+INSERT INTO users (name,email,password)
+VALUES ('Debjit Das','Debjit@gmail.com','123');
+
+SELECT * FROM users WHERE TRUE;
+
+INSERT INTO users (name, email, password)
+VALUES ('NITISH', 'nitish@gmail.com', '1234')
+RETURNING user_id;
+
+INSERT INTO users (name, email, password)
+VALUES
+('Amit Sharma', 'amit.sharma@gmail.com', 'pass@123'),
+('Priya Verma', 'priya.verma@gmail.com', 'priya@2024'),
+('Rohit Kumar', 'rohit.kumar@gmail.com', 'rk@12345'),
+('Neha Singh', 'neha.singh@gmail.com', 'neha@pw'),
+('Sourav Das', 'sourav.das@gmail.com', 'sd@7890'),
+('Ananya Gupta', 'ananya.gupta@gmail.com', 'anu@321'),
+('Rahul Mehta', 'rahul.mehta@gmail.com', 'rahul@999'),
+('Pooja Patel', 'pooja.patel@gmail.com', 'pp@2024'),
+('Arjun Malhotra', 'arjun.malhotra@gmail.com', 'arjun@777'),
+('Kavita Nair', 'kavita.nair@gmail.com', 'kn@456');
+
+INSERT INTO users (name, email, password)
+VALUES
+('Priya Verma', 'priya.verma@gmail.com', 'new@2025')
+ON CONFLICT (email)
+DO UPDATE
+SET
+    name = EXCLUDED.name,
+    password = EXCLUDED.password;
+
+
+CREATE TABLE models (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    brand_name TEXT,
+    model TEXT,
+    price INTEGER,
+    rating INTEGER,
+
+    has_5g BOOLEAN,
+    has_nfc BOOLEAN,
+    has_ir_blaster BOOLEAN,
+
+    processor_brand TEXT,
+    num_cores INTEGER,
+    processor_speed NUMERIC,
+
+    battery_capacity INTEGER,
+
+    fast_charging_available BOOLEAN,
+    fast_charging INTEGER,
+
+    ram_capacity INTEGER,
+    internal_memory INTEGER,
+
+    screen_size NUMERIC,
+    refresh_rate INTEGER,
+
+    num_rear_cameras INTEGER,
+    num_front_cameras INTEGER,
+
+    os TEXT,
+
+    primary_camera_rear INTEGER,
+    primary_camera_front INTEGER,
+
+    extended_memory_available BOOLEAN,
+    extended_upto INTEGER,
+
+    resolution_width INTEGER,
+    resolution_height INTEGER
+);
+
+
+INSERT INTO models (
+brand_name, model, price, rating, has_5g, has_nfc, has_ir_blaster,
+processor_brand, num_cores, processor_speed, battery_capacity,
+fast_charging_available, fast_charging, ram_capacity, internal_memory,
+screen_size, refresh_rate, num_rear_cameras, num_front_cameras, os,
+primary_camera_rear, primary_camera_front, extended_memory_available,
+extended_upto, resolution_width, resolution_height
+)
+VALUES
+('oneplus','OnePlus 11 5G',54999,89,TRUE,TRUE,FALSE,'snapdragon',8,3.2,5000,TRUE,100,12,256,6.7,120,3,1,'android',50,16,FALSE,NULL,1440,3216),
+
+('oneplus','OnePlus Nord CE 2 Lite 5G',19989,81,TRUE,FALSE,FALSE,'snapdragon',8,2.2,5000,TRUE,33,6,128,6.59,120,3,1,'android',64,16,TRUE,1024,1080,2412),
+
+('samsung','Samsung Galaxy A14 5G',16499,75,TRUE,FALSE,FALSE,'exynos',8,2.4,5000,TRUE,15,4,64,6.6,90,3,1,'android',50,13,TRUE,1024,1080,2408),
+
+('motorola','Motorola Moto G62 5G',14999,81,TRUE,FALSE,FALSE,'snapdragon',8,2.2,5000,TRUE,NULL,6,128,6.55,120,3,1,'android',50,16,TRUE,1024,1080,2400),
+
+('realme','Realme 10 Pro Plus',24999,82,TRUE,FALSE,FALSE,'dimensity',8,2.6,5000,TRUE,67,6,128,6.7,120,3,1,'android',108,16,FALSE,NULL,1080,2412),
+
+('samsung','Samsung Galaxy F23 5G (6GB RAM + 128GB)',16999,80,TRUE,TRUE,FALSE,'snapdragon',8,2.2,5000,TRUE,25,6,128,6.6,120,3,1,'android',50,8,TRUE,1024,1080,2408),
+
+('apple','Apple iPhone 14',65999,81,TRUE,TRUE,FALSE,'bionic',6,3.22,3279,TRUE,NULL,6,128,6.1,60,2,1,'ios',12,12,FALSE,NULL,1170,2532),
+
+('xiaomi','Xiaomi Redmi Note 12 Pro Plus',29999,86,TRUE,FALSE,TRUE,'dimensity',8,2.6,4980,TRUE,120,8,256,6.67,120,3,1,'android',200,16,FALSE,NULL,1080,2400),
+
+('nothing','Nothing Phone 1',26749,85,TRUE,TRUE,FALSE,'snapdragon',8,2.5,4500,TRUE,33,8,128,6.55,120,2,1,'android',50,16,FALSE,NULL,1080,2400),
+
+('oneplus','OnePlus Nord 2T 5G',28999,84,TRUE,TRUE,FALSE,'dimensity',8,3,4500,TRUE,80,8,128,6.43,90,3,1,'android',50,32,FALSE,NULL,1080,2400),
+
+('realme','Realme 10 Pro',18999,82,TRUE,FALSE,FALSE,'snapdragon',8,2.2,5000,TRUE,33,6,128,6.72,120,2,1,'android',108,16,TRUE,1024,1080,2400),
+
+('oppo','Oppo A78',18999,79,TRUE,TRUE,FALSE,'dimensity',8,2.2,5000,TRUE,33,8,128,6.56,90,2,1,'android',50,8,TRUE,NULL,720,1612),
+
+('xiaomi','Xiaomi Redmi Note 12 Pro 5G',24762,79,TRUE,FALSE,TRUE,'dimensity',8,2.6,5000,TRUE,67,6,128,6.67,120,3,1,'android',50,16,FALSE,NULL,1080,2400),
+
+('vivo','Vivo T1 5G (6GB RAM + 128GB)',16990,80,TRUE,FALSE,FALSE,'snapdragon',8,2.2,5000,TRUE,18,6,128,6.58,120,3,1,'android',50,16,TRUE,1024,1080,2408),
+
+('samsung','Samsung Galaxy S23 Ultra 5G',114990,NULL,TRUE,TRUE,FALSE,'snapdragon',8,3.2,5000,TRUE,45,8,256,6.8,120,4,1,'android',200,12,FALSE,NULL,1440,3088),
+
+('apple','Apple iPhone 13',62999,79,TRUE,TRUE,FALSE,'bionic',6,3.22,3240,TRUE,NULL,4,128,6.1,60,2,1,'ios',12,12,FALSE,NULL,1170,2532),
+
+('vivo','Vivo Y16',9999,65,FALSE,FALSE,FALSE,'helio',8,2.3,5000,TRUE,10,3,32,6.51,60,2,1,'android',13,5,TRUE,NULL,720,1600),
+
+('oppo','OPPO Reno 9 Pro Plus',45999,86,TRUE,TRUE,FALSE,'snapdragon',8,3.2,4700,TRUE,80,16,256,6.7,120,3,1,'android',50,32,FALSE,NULL,1080,2412),
+
+('oneplus','OnePlus 10R 5G',32999,86,TRUE,TRUE,FALSE,'dimensity',8,2.85,5000,TRUE,80,8,128,6.7,120,3,1,'android',50,16,FALSE,NULL,1080,2412),
+
+('vivo','Vivo Y22',14499,72,FALSE,FALSE,FALSE,'helio',8,2,5000,TRUE,18,4,64,6.55,60,2,1,'android',50,8,TRUE,1024,720,1612);
+
+
+SELECT * from models WHERE TRUE;
+
+SELECT model, price, rating from models;
+
+SELECT model, processor_brand, refresh_rate from models;
+
+SELECT model AS "mobile name", processor_brand AS "CPU", refresh_rate AS "RR" from models;
+
+SELECT model, 
+SQRT(resolution_width*resolution_width + resolution_height*resolution_height)/screen_size 
+AS "PPI"  
+FROM models
+
+SELECT DISTINCT(brand_name) 
+AS "All brands"
+FROM models
+
+SELECT DISTINCT(processor_brand) 
+AS "All Processor"
+FROM models
+
+SELECT DISTINCT brand_name AS "All brands", processor_brand AS "All Processor"
+FROM models
+
+SELECT
+array_agg(DISTINCT brand_name) AS "All brands",
+array_agg(DISTINCT processor_brand) AS "All Processor"
+FROM models;
+
+SELECT * 
+FROM models
+WHERE brand_name = 'samsung' AND internal_memory > 128
+
+SELECT * 
+FROM models
+WHERE brand_name = 'samsung' OR internal_memory > 128
+
+SELECT brand_name, model, price, rating, os 
+FROM models
+WHERE price > 30000 AND rating > 80 AND os = 'android'
+
+SELECT brand_name, model, price, rating, os 
+FROM models
+WHERE price BETWEEN 10000 AND 30000
+
+SELECT brand_name, model, price, rating, os 
+FROM models
+WHERE price > 10000 AND price < 20000
+
+SELECT brand_name, model, price, rating
+FROM models
+WHERE price < 15000 AND rating > 80
+
+SELECT DISTINCT(brand_name)
+FROM models
+WHERE price > 30000
+
+SELECT DISTINCT(brand_name)
+FROM models
+WHERE price > 15000
+
+SELECT brand_name, model, processor_brand 
+FROM models
+WHERE processor_brand IN ('snapdragon', 'exynos', 'bionic')
+
+SELECT brand_name, model, processor_brand 
+FROM models
+WHERE processor_brand NOT IN ('snapdragon', 'exynos', 'bionic')
+
+UPDATE models
+SET processor_brand = 'dimensity'
+WHERE processor_brand = 'helio'
+
+SELECT * 
+FROM models
+WHERE price > 60000
+
+DELETE FROM models
+WHERE price > 60000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
