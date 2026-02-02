@@ -1,3 +1,21 @@
+-- ============================================================================
+-- PostgreSQL Day 1: SQL Fundamentals - CRUD Operations & Basic Queries
+-- ============================================================================
+-- Author: Debjit Das
+-- Topics: CREATE TABLE, INSERT, SELECT, UPDATE, DELETE, WHERE, Operators
+-- ============================================================================
+
+
+-- ============================================================================
+-- SECTION 1: TABLE CREATION (DDL - Data Definition Language)
+-- ============================================================================
+
+-- Creating a 'users' table with auto-incrementing primary key
+-- GENERATED ALWAYS AS IDENTITY: PostgreSQL's modern way to create auto-increment columns
+-- PRIMARY KEY: Ensures uniqueness and creates an index automatically
+-- NOT NULL: Column cannot contain NULL values
+-- UNIQUE: Ensures no duplicate values in the column
+
 CREATE TABLE users (
     user_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -5,14 +23,36 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL
 );
 
+
+-- ============================================================================
+-- SECTION 2: INSERT OPERATIONS (DML - Data Manipulation Language)
+-- ============================================================================
+
+-- 2.1 Basic Single Row Insert
+-- Inserts one record into the users table
+
 INSERT INTO users (name,email,password)
 VALUES ('Debjit Das','Debjit@gmail.com','123');
 
+
+-- 2.2 Select All Records
+-- WHERE TRUE is always true, so it returns all rows (equivalent to SELECT * FROM users)
+
 SELECT * FROM users WHERE TRUE;
+
+
+-- 2.3 Insert with RETURNING Clause
+-- RETURNING: Returns the specified columns of the newly inserted row
+-- Useful when you need the auto-generated ID immediately after insert
 
 INSERT INTO users (name, email, password)
 VALUES ('NITISH', 'nitish@gmail.com', '1234')
 RETURNING user_id;
+
+
+-- 2.4 Bulk Insert (Multiple Rows)
+-- Inserting multiple records in a single statement is more efficient than multiple single inserts
+-- Better performance due to reduced network round trips and transaction overhead
 
 INSERT INTO users (name, email, password)
 VALUES
@@ -27,6 +67,13 @@ VALUES
 ('Arjun Malhotra', 'arjun.malhotra@gmail.com', 'arjun@777'),
 ('Kavita Nair', 'kavita.nair@gmail.com', 'kn@456');
 
+
+-- 2.5 UPSERT Operation (INSERT ... ON CONFLICT)
+-- Also known as "Insert or Update" / "Merge" operation
+-- ON CONFLICT: Specifies what to do when a unique constraint violation occurs
+-- EXCLUDED: Special table that refers to the values that were proposed for insertion
+-- Use Case: Update existing record if email exists, otherwise insert new record
+
 INSERT INTO users (name, email, password)
 VALUES
 ('Priya Verma', 'priya.verma@gmail.com', 'new@2025')
@@ -37,48 +84,77 @@ SET
     password = EXCLUDED.password;
 
 
+-- ============================================================================
+-- SECTION 3: MODELS TABLE - Smartphone Database Schema
+-- ============================================================================
+
+-- Creating a comprehensive smartphone specifications table
+-- Contains 26 columns covering all major phone specifications
+-- Data types used: INTEGER, TEXT, BOOLEAN, NUMERIC
+-- NUMERIC: Used for decimal values like processor_speed and screen_size
+
 CREATE TABLE models (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
+    -- Basic Information
     brand_name TEXT,
     model TEXT,
     price INTEGER,
     rating INTEGER,
 
+    -- Connectivity Features (Boolean flags)
     has_5g BOOLEAN,
     has_nfc BOOLEAN,
     has_ir_blaster BOOLEAN,
 
+    -- Processor Specifications
     processor_brand TEXT,
     num_cores INTEGER,
     processor_speed NUMERIC,
 
+    -- Battery Specifications
     battery_capacity INTEGER,
 
+    -- Charging Features
     fast_charging_available BOOLEAN,
     fast_charging INTEGER,
 
+    -- Memory Specifications
     ram_capacity INTEGER,
     internal_memory INTEGER,
 
+    -- Display Specifications
     screen_size NUMERIC,
     refresh_rate INTEGER,
 
+    -- Camera Specifications
     num_rear_cameras INTEGER,
     num_front_cameras INTEGER,
 
+    -- Operating System
     os TEXT,
 
+    -- Camera Resolution (Megapixels)
     primary_camera_rear INTEGER,
     primary_camera_front INTEGER,
 
+    -- Storage Expansion
     extended_memory_available BOOLEAN,
     extended_upto INTEGER,
 
+    -- Screen Resolution
     resolution_width INTEGER,
     resolution_height INTEGER
 );
 
+
+-- ============================================================================
+-- SECTION 4: BULK DATA INSERT - Smartphone Dataset
+-- ============================================================================
+
+-- Inserting 20 smartphone models from various brands
+-- Brands included: OnePlus, Samsung, Motorola, Realme, Apple, Xiaomi, Nothing, Oppo, Vivo
+-- Price range: ₹9,999 to ₹1,14,990
 
 INSERT INTO models (
 brand_name, model, price, rating, has_5g, has_nfc, has_ir_blaster,
@@ -130,85 +206,218 @@ VALUES
 ('vivo','Vivo Y22',14499,72,FALSE,FALSE,FALSE,'helio',8,2,5000,TRUE,18,4,64,6.55,60,2,1,'android',50,8,TRUE,1024,720,1612);
 
 
+-- ============================================================================
+-- SECTION 5: SELECT QUERIES - Data Retrieval
+-- ============================================================================
+
+-- 5.1 Select All Columns
+-- Retrieves all records with all columns from the models table
+
 SELECT * from models WHERE TRUE;
+
+
+-- 5.2 Select Specific Columns
+-- Retrieves only model name, price, and rating - reduces data transfer
 
 SELECT model, price, rating from models;
 
+
+-- 5.3 Select Different Columns
+-- Retrieves model, processor brand, and refresh rate
+
 SELECT model, processor_brand, refresh_rate from models;
 
+
+-- 5.4 Column Aliasing with AS
+-- Renames columns in the output for better readability
+-- Use double quotes for aliases with spaces or special characters
+
 SELECT model AS "mobile name", processor_brand AS "CPU", refresh_rate AS "RR" from models;
+
+
+-- 5.5 Calculated/Computed Columns
+-- PPI (Pixels Per Inch) Formula: √(width² + height²) / screen_size
+-- SQRT(): Square root function
+-- Creates a virtual column that doesn't exist in the table
 
 SELECT model, 
 SQRT(resolution_width*resolution_width + resolution_height*resolution_height)/screen_size 
 AS "PPI"  
 FROM models
 
+
+-- ============================================================================
+-- SECTION 6: DISTINCT - Removing Duplicates
+-- ============================================================================
+
+-- 6.1 Distinct Brand Names
+-- Returns unique brand names, removes duplicates
+
 SELECT DISTINCT(brand_name) 
 AS "All brands"
 FROM models
+
+
+-- 6.2 Distinct Processor Brands
+-- Returns unique processor types in the dataset
 
 SELECT DISTINCT(processor_brand) 
 AS "All Processor"
 FROM models
 
+
+-- 6.3 Distinct Combinations
+-- Returns unique combinations of brand and processor
+-- Different from getting distinct values separately
+
 SELECT DISTINCT brand_name AS "All brands", processor_brand AS "All Processor"
 FROM models
+
+
+-- 6.4 Array Aggregation with DISTINCT
+-- array_agg(): Aggregates values into a PostgreSQL array
+-- Combines with DISTINCT to get unique values as arrays
+-- Useful for getting all unique values in a single row
 
 SELECT
 array_agg(DISTINCT brand_name) AS "All brands",
 array_agg(DISTINCT processor_brand) AS "All Processor"
 FROM models;
 
+
+-- ============================================================================
+-- SECTION 7: WHERE CLAUSE - Filtering Data
+-- ============================================================================
+
+-- 7.1 AND Operator
+-- Both conditions must be TRUE
+-- Returns Samsung phones with more than 128GB storage
+
 SELECT * 
 FROM models
 WHERE brand_name = 'samsung' AND internal_memory > 128
+
+
+-- 7.2 OR Operator
+-- At least one condition must be TRUE
+-- Returns Samsung phones OR any phone with more than 128GB storage
 
 SELECT * 
 FROM models
 WHERE brand_name = 'samsung' OR internal_memory > 128
 
+
+-- 7.3 Multiple AND Conditions
+-- All three conditions must be TRUE
+-- Premium Android phones: price > 30000, rating > 80, Android OS
+
 SELECT brand_name, model, price, rating, os 
 FROM models
 WHERE price > 30000 AND rating > 80 AND os = 'android'
+
+
+-- 7.4 BETWEEN Operator
+-- Checks if value falls within a range (inclusive)
+-- Equivalent to: price >= 10000 AND price <= 30000
 
 SELECT brand_name, model, price, rating, os 
 FROM models
 WHERE price BETWEEN 10000 AND 30000
 
+
+-- 7.5 Range with Comparison Operators
+-- Alternative to BETWEEN but with exclusive bounds
+-- price > 10000 AND price < 20000 (excludes boundary values)
+
 SELECT brand_name, model, price, rating, os 
 FROM models
 WHERE price > 10000 AND price < 20000
+
+
+-- 7.6 Budget Phones with Good Rating
+-- Phones under ₹15,000 with rating above 80
 
 SELECT brand_name, model, price, rating
 FROM models
 WHERE price < 15000 AND rating > 80
 
+
+-- 7.7 Distinct with WHERE
+-- Finding premium brands (phones priced above ₹30,000)
+
 SELECT DISTINCT(brand_name)
 FROM models
 WHERE price > 30000
+
+
+-- 7.8 Mid-range and Above Brands
+-- Brands with phones above ₹15,000
 
 SELECT DISTINCT(brand_name)
 FROM models
 WHERE price > 15000
 
+
+-- ============================================================================
+-- SECTION 8: IN and NOT IN Operators
+-- ============================================================================
+
+-- 8.1 IN Operator
+-- Checks if value matches ANY value in the list
+-- More readable than multiple OR conditions
+-- Equivalent to: processor_brand = 'snapdragon' OR processor_brand = 'exynos' OR processor_brand = 'bionic'
+
 SELECT brand_name, model, processor_brand 
 FROM models
 WHERE processor_brand IN ('snapdragon', 'exynos', 'bionic')
+
+
+-- 8.2 NOT IN Operator
+-- Excludes rows where value matches any value in the list
+-- Returns phones with processors OTHER than snapdragon, exynos, bionic
 
 SELECT brand_name, model, processor_brand 
 FROM models
 WHERE processor_brand NOT IN ('snapdragon', 'exynos', 'bionic')
 
+
+-- ============================================================================
+-- SECTION 9: UPDATE - Modifying Existing Data
+-- ============================================================================
+
+-- 9.1 Update with WHERE Condition
+-- Changes 'helio' processor to 'dimensity' (MediaTek rebranding)
+-- IMPORTANT: Always use WHERE clause to avoid updating all rows!
+
 UPDATE models
 SET processor_brand = 'dimensity'
 WHERE processor_brand = 'helio'
+
+
+-- ============================================================================
+-- SECTION 10: DELETE - Removing Data
+-- ============================================================================
+
+-- 10.1 Select Before Delete (Preview)
+-- Always preview data before deleting to verify affected rows
 
 SELECT * 
 FROM models
 WHERE price > 60000
 
+
+-- 10.2 Delete with WHERE Condition
+-- Removes premium phones (price > ₹60,000) from the table
+-- CAUTION: This permanently removes data!
+-- IMPORTANT: Always use WHERE clause to avoid deleting all rows!
+
 DELETE FROM models
 WHERE price > 60000
+
+
+-- ============================================================================
+-- END OF DAY 1
+-- ============================================================================
 
 
 

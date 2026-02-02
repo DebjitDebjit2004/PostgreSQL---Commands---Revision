@@ -1,10 +1,39 @@
+-- ============================================================================
+-- PostgreSQL Day 2: Sorting, Pagination & Grouping
+-- ============================================================================
+-- Author: Debjit Das
+-- Topics: ORDER BY, LIMIT, OFFSET, GROUP BY, Aggregate Functions
+-- ============================================================================
+
+
+-- ============================================================================
+-- SECTION 1: BASIC DATA RETRIEVAL
+-- ============================================================================
+
+-- View all records from the models table
+
 SELECT * FROM MODELS
 
 
--- Queries for Sorting Data :--> ORDER BY ASC AND DESC --
+-- ============================================================================
+-- SECTION 2: ORDER BY - Sorting Data
+-- ============================================================================
+-- ORDER BY: Sorts the result set based on one or more columns
+-- ASC (Ascending): A-Z, 0-9, oldest-newest (DEFAULT)
+-- DESC (Descending): Z-A, 9-0, newest-oldest
+
+-- 2.1 Sorting with Multiple OR Conditions
+-- Filter specific brands and sort by screen size (largest first)
+-- Less efficient way - using multiple OR conditions
+
 SELECT BRAND_NAME, MODEL, PRICE, SCREEN_SIZE FROM MODELS
 WHERE BRAND_NAME = 'samsung' OR BRAND_NAME = 'motorola' OR BRAND_NAME = 'oneplus'
 ORDER BY SCREEN_SIZE DESC
+
+
+-- 2.2 Sorting with IN Operator + LIMIT
+-- Same query but using IN operator (cleaner syntax)
+-- LIMIT 3: Returns only the top 3 results
 
 SELECT BRAND_NAME, MODEL, PRICE, SCREEN_SIZE 
 FROM MODELS
@@ -12,9 +41,20 @@ WHERE BRAND_NAME IN('samsung', 'motorola', 'oneplus')
 ORDER BY SCREEN_SIZE DESC
 LIMIT 3
 
+
+-- 2.3 Sorting by Calculated Column
+-- Creates a computed column 'total_cameras' and sorts by it
+-- Demonstrates that you can ORDER BY an alias defined in SELECT
+
 SELECT BRAND_NAME, MODEL, NUM_REAR_CAMERAS, NUM_FRONT_CAMERAS, (NUM_REAR_CAMERAS + NUM_FRONT_CAMERAS) AS "total_cameras"
 FROM MODELS
 ORDER BY total_cameras DESC LIMIT 10	
+
+
+-- 2.4 PPI Calculation - Highest PPI Phones (Top 5)
+-- PPI (Pixels Per Inch) = √(width² + height²) / screen_size
+-- ROUND(): Rounds to nearest integer for cleaner output
+-- Higher PPI = Sharper display
 
 SELECT model, 
 ROUND(SQRT((resolution_width*resolution_width + resolution_height*resolution_height))/screen_size)
@@ -22,6 +62,11 @@ AS "ppi"
 FROM models 
 ORDER BY ppi DESC
 LIMIT 5
+
+
+-- 2.5 PPI Calculation - Lowest PPI Phones (Bottom 5)
+-- Same calculation but sorted ascending (lowest PPI first)
+-- Lower PPI phones may have less sharp displays
 
 SELECT model, 
 ROUND(SQRT((resolution_width*resolution_width + resolution_height*resolution_height))/screen_size)
@@ -30,6 +75,18 @@ FROM models
 ORDER BY ppi ASC
 LIMIT 5
 
+
+-- ============================================================================
+-- SECTION 3: OFFSET - Pagination
+-- ============================================================================
+-- OFFSET: Skips the specified number of rows before returning results
+-- Combined with LIMIT for pagination
+-- LIMIT 7 OFFSET 5: Skip first 5 rows, then return next 7 rows
+-- Useful for implementing "Load More" or page navigation
+
+-- 3.1 Pagination Example
+-- Gets phones ranked 6th to 12th by PPI (skips top 5)
+
 SELECT model, 
 ROUND(SQRT((resolution_width*resolution_width + resolution_height*resolution_height))/screen_size)
 AS "ppi"  
@@ -37,62 +94,87 @@ FROM models
 ORDER BY ppi DESC
 LIMIT 7 OFFSET 5
 
+
+-- 3.2 Sorting with Arithmetic Operations
+-- Divides rating by 10 for a normalized scale
+-- Note: There's a syntax error (extra comma) - correct version below
+-- Correct: SELECT BRAND_NAME, MODEL, rating/10 AS "rating"
+
 SELECT BRAND_NAME, MODEL, rating/10,  AS "rating"
 FROM MODELS
 WHERE BRAND_NAME IN('samsung')
 ORDER BY rating ASC
+
+
+-- ============================================================================
+-- SECTION 4: MULTI-COLUMN SORTING
+-- ============================================================================
+-- You can sort by multiple columns
+-- First sorts by brand_name DESC (Z-A), then by price ASC (low to high) within each brand
+-- Order of columns in ORDER BY matters!
 
 SELECT BRAND_NAME, MODEL, PRICE, RATING
 FROM MODELS
 ORDER BY BRAND_NAME DESC, PRICE ASC
 
 
--- QUERIES FOR GROUPING DATA :--> GROUP BY --
+-- ============================================================================
+-- SECTION 5: GROUP BY - Data Aggregation
+-- ============================================================================
+-- GROUP BY: Groups rows with same values into summary rows
+-- Used with aggregate functions: COUNT, SUM, AVG, MIN, MAX
+-- COUNT(*): Counts all rows in each group
 
-SELECT BRAND_NAME, COUNT(*) AS Total_models
+-- 5.1 Count Models per Brand
+-- Shows how many phone models each brand has in the database
+
+SELECT 
+    BRAND_NAME, 
+    COUNT(*) AS Total_models
 FROM MODELS
 GROUP BY BRAND_NAME
 ORDER BY Total_models DESC
 
 
+-- 5.2 GROUP BY with Multiple Aggregations + Pagination
+-- COUNT(*): Total number of models per brand
+-- AVG(price): Average price of phones per brand
+-- ROUND(): Rounds average price to whole number
+-- LIMIT 3 OFFSET 2: Skip top 2 brands, show next 3
+
+SELECT 
+    brand_name,
+    COUNT(*) AS total_models,
+    ROUND(AVG(price)) AS avg_price
+FROM models
+GROUP BY brand_name
+ORDER BY total_models DESC
+LIMIT 3 OFFSET 2
 
 
+-- ============================================================================
+-- SECTION 6: IPL CRICKET DATA - New Dataset
+-- ============================================================================
+-- Creating a ball-by-ball IPL match data table
+-- This table stores detailed cricket match information
+-- Each row represents one ball delivery in a match
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- 6.1 Table Schema for IPL Data
+-- id: Match identifier
+-- innings: 1st or 2nd innings
+-- overs: Over number (0-19 for T20)
+-- ballnumber: Ball number within the over (1-6)
+-- batter/bowler/non_striker: Player names
+-- extra_type: Type of extra (wide, noball, legbyes, etc.)
+-- batsman_run: Runs scored by batsman off the bat
+-- extras_run: Extra runs (wides, noballs, etc.)
+-- total_run: Total runs from that delivery
+-- non_boundary: TRUE if runs were not from a boundary
+-- iswicketdelivery: TRUE if a wicket fell
+-- player_out: Name of dismissed player (if any)
+-- kind: Type of dismissal (caught, bowled, etc.)
+-- fielders_involved: Fielder who took the catch/runout
+-- battingteam: Name of the batting team
 
 CREATE TABLE ipl_data (
     id BIGINT,
@@ -115,75 +197,73 @@ CREATE TABLE ipl_data (
 );
 
 
+-- ============================================================================
+-- SECTION 7: IPL DATA INSERT - Sample Match Data
+-- ============================================================================
+-- Inserting ball-by-ball data for Rajasthan Royals innings
+-- Match ID: 1312200
+-- Batters: YBK Jaiswal, JC Buttler, SV Samson
+-- Bowlers: Mohammed Shami, Yash Dayal, LH Ferguson
+-- Notable: Jaiswal dismissed caught by R Sai Kishore off Yash Dayal
+
 INSERT INTO ipl_data (
     id, innings, overs, ballnumber, batter, bowler, non_striker, extra_type,
     batsman_run, extras_run, total_run, non_boundary, iswicketdelivery,
     player_out, kind, fielders_involved, battingteam
 )
 VALUES
+-- Over 0 (First Over) - Mohammed Shami bowling
 (1312200, 1, 0, 1, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 0, 2, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', 'legbyes', 0, 1, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 0, 3, 'JC Buttler', 'Mohammed Shami', 'YBK Jaiswal', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 0, 4, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 0, 5, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 0, 6, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+
+-- Over 1 (Second Over) - Yash Dayal bowling
 (1312200, 1, 1, 1, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 1, 2, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
-(1312200, 1, 1, 3, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 4, 0, 4, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 1, 3, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 4, 0, 4, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),  -- FOUR!
 (1312200, 1, 1, 4, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
-
 (1312200, 1, 1, 5, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 1, 6, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+
+-- Over 2 (Third Over) - Mohammed Shami bowling
 (1312200, 1, 2, 1, 'JC Buttler', 'Mohammed Shami', 'YBK Jaiswal', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 2, 2, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
-(1312200, 1, 2, 3, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 4, 0, 4, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 2, 3, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 4, 0, 4, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),  -- FOUR!
 (1312200, 1, 2, 4, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
-(1312200, 1, 2, 5, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 6, 0, 6, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 2, 5, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 6, 0, 6, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),  -- SIX!
 (1312200, 1, 2, 6, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 3, 0, 3, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+
+-- Over 3 (Fourth Over) - Yash Dayal bowling
 (1312200, 1, 3, 1, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 3, 2, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
-
 (1312200, 1, 3, 3, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 3, 4, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 2, 0, 2, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
-(1312200, 1, 3, 5, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 6, 0, 6, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
-(1312200, 1, 3, 6, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 0, 0, 0, FALSE, TRUE, 'YBK Jaiswal', 'caught', 'R Sai Kishore', 'Rajasthan Royals'),
+(1312200, 1, 3, 5, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 6, 0, 6, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),  -- SIX!
+(1312200, 1, 3, 6, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 0, 0, 0, FALSE, TRUE, 'YBK Jaiswal', 'caught', 'R Sai Kishore', 'Rajasthan Royals'),  -- WICKET! Jaiswal out
+
+-- Over 4 (Fifth Over) - LH Ferguson bowling (Samson comes to bat)
 (1312200, 1, 4, 1, 'JC Buttler', 'LH Ferguson', 'SV Samson', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 4, 2, 'JC Buttler', 'LH Ferguson', 'SV Samson', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
-(1312200, 1, 4, 3, 'SV Samson', 'LH Ferguson', 'JC Buttler', NULL, 4, 0, 4, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 4, 3, 'SV Samson', 'LH Ferguson', 'JC Buttler', NULL, 4, 0, 4, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),  -- FOUR! Samson's first boundary
 (1312200, 1, 4, 4, 'SV Samson', 'LH Ferguson', 'JC Buttler', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 4, 5, 'JC Buttler', 'LH Ferguson', 'SV Samson', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
 (1312200, 1, 4, 6, 'JC Buttler', 'LH Ferguson', 'SV Samson', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals');
 
+
+-- ============================================================================
+-- SECTION 8: QUERYING IPL DATA
+-- ============================================================================
+
+-- 8.1 View All IPL Data
+-- Note: WHERE 'YES' is always TRUE (non-empty string), returns all rows
+-- Better to use: SELECT * FROM ipl_data; OR WHERE TRUE
+
 SELECT * FROM ipl_data WHERE 'YES';
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- ============================================================================
+-- END OF DAY 2
+-- ============================================================================
