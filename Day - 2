@@ -42,8 +42,6 @@ FROM MODELS
 WHERE BRAND_NAME IN('samsung')
 ORDER BY rating ASC
 
--- asdfghjklzxcvbnm,.
-
 
 
 
