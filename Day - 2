@@ -1,0 +1,183 @@
+SELECT * FROM MODELS
+
+
+
+SELECT BRAND_NAME, MODEL, PRICE, SCREEN_SIZE FROM MODELS
+WHERE BRAND_NAME = 'samsung' OR BRAND_NAME = 'motorola' OR BRAND_NAME = 'oneplus'
+ORDER BY SCREEN_SIZE DESC
+
+SELECT BRAND_NAME, MODEL, PRICE, SCREEN_SIZE 
+FROM MODELS
+WHERE BRAND_NAME IN('samsung', 'motorola', 'oneplus')
+ORDER BY SCREEN_SIZE DESC
+LIMIT 3
+
+SELECT BRAND_NAME, MODEL, NUM_REAR_CAMERAS, NUM_FRONT_CAMERAS, (NUM_REAR_CAMERAS + NUM_FRONT_CAMERAS) AS "total_cameras"
+FROM MODELS
+ORDER BY total_cameras DESC LIMIT 10	
+
+SELECT model, 
+ROUND(SQRT((resolution_width*resolution_width + resolution_height*resolution_height))/screen_size)
+AS "ppi"  
+FROM models 
+ORDER BY ppi DESC
+LIMIT 5
+
+SELECT model, 
+ROUND(SQRT((resolution_width*resolution_width + resolution_height*resolution_height))/screen_size)
+AS "ppi"  
+FROM models 
+ORDER BY ppi ASC
+LIMIT 5
+
+SELECT model, 
+ROUND(SQRT((resolution_width*resolution_width + resolution_height*resolution_height))/screen_size)
+AS "ppi"  
+FROM models 
+ORDER BY ppi DESC
+LIMIT 7 OFFSET 5
+
+SELECT BRAND_NAME, MODEL, rating/10,  AS "rating"
+FROM MODELS
+WHERE BRAND_NAME IN('samsung')
+ORDER BY rating ASC
+
+-- asdfghjklzxcvbnm,.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE ipl_data (
+    id BIGINT,
+    innings INTEGER,
+    overs INTEGER,
+    ballnumber INTEGER,
+    batter TEXT,
+    bowler TEXT,
+    non_striker TEXT,
+    extra_type TEXT,
+    batsman_run INTEGER,
+    extras_run INTEGER,
+    total_run INTEGER,
+    non_boundary BOOLEAN,
+    iswicketdelivery BOOLEAN,
+    player_out TEXT,
+    kind TEXT,
+    fielders_involved TEXT,
+    battingteam TEXT
+);
+
+
+INSERT INTO ipl_data (
+    id, innings, overs, ballnumber, batter, bowler, non_striker, extra_type,
+    batsman_run, extras_run, total_run, non_boundary, iswicketdelivery,
+    player_out, kind, fielders_involved, battingteam
+)
+VALUES
+(1312200, 1, 0, 1, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 0, 2, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', 'legbyes', 0, 1, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 0, 3, 'JC Buttler', 'Mohammed Shami', 'YBK Jaiswal', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 0, 4, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 0, 5, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 0, 6, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 1, 1, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 1, 2, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 1, 3, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 4, 0, 4, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 1, 4, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+
+(1312200, 1, 1, 5, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 1, 6, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 2, 1, 'JC Buttler', 'Mohammed Shami', 'YBK Jaiswal', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 2, 2, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 2, 3, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 4, 0, 4, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 2, 4, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 2, 5, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 6, 0, 6, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 2, 6, 'YBK Jaiswal', 'Mohammed Shami', 'JC Buttler', NULL, 3, 0, 3, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 3, 1, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 3, 2, 'JC Buttler', 'Yash Dayal', 'YBK Jaiswal', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+
+(1312200, 1, 3, 3, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 3, 4, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 2, 0, 2, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 3, 5, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 6, 0, 6, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 3, 6, 'YBK Jaiswal', 'Yash Dayal', 'JC Buttler', NULL, 0, 0, 0, FALSE, TRUE, 'YBK Jaiswal', 'caught', 'R Sai Kishore', 'Rajasthan Royals'),
+(1312200, 1, 4, 1, 'JC Buttler', 'LH Ferguson', 'SV Samson', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 4, 2, 'JC Buttler', 'LH Ferguson', 'SV Samson', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 4, 3, 'SV Samson', 'LH Ferguson', 'JC Buttler', NULL, 4, 0, 4, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 4, 4, 'SV Samson', 'LH Ferguson', 'JC Buttler', NULL, 1, 0, 1, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 4, 5, 'JC Buttler', 'LH Ferguson', 'SV Samson', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals'),
+(1312200, 1, 4, 6, 'JC Buttler', 'LH Ferguson', 'SV Samson', NULL, 0, 0, 0, FALSE, FALSE, NULL, NULL, NULL, 'Rajasthan Royals');
+
+SELECT * FROM ipl_data WHERE 'YES';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
