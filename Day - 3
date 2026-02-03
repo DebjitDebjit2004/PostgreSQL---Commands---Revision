@@ -1,0 +1,96 @@
+SELECT * FROM models
+
+SELECT 
+	brand_name,
+	processor_brand,
+	COUNT(*) AS "num_phones",
+	ROUND(AVG(primary_camera_rear)) AS "avg_camera_resolution",
+	ROUND(AVG(rating)) AS "avg_rating"
+FROM models
+GROUP BY brand_name, processor_brand
+
+SELECT 
+	brand_name,
+	COUNT(*) AS "count"
+FROM models
+WHERE has_nfc = 'true' AND has_ir_blaster = 'false'
+GROUP BY brand_name
+ORDER BY count DESC
+
+SELECT
+	has_nfc,
+	ROUND(AVG(price)) AS "price"
+FROM models
+WHERE brand_name = 'samsung' AND has_5g = 'true'
+GROUP BY has_nfc
+
+SELECT 
+	brand_name,
+	COUNT(*) AS "count",
+	AVG(rating) AS "avg_rating"
+FROM models
+GROUP BY brand_name
+ORDER BY avg_rating DESC
+
+SELECT 
+    brand_name,
+    COUNT(*) AS "count",
+    AVG(rating) AS "avg_rating"
+FROM models
+GROUP BY brand_name
+HAVING COUNT(*) > 1
+ORDER BY "avg_rating" DESC;
+
+SELECT 
+	brand_name,
+	ROUND(AVG(ram_capacity)) as "avg_ram_capacity"
+FROM models
+WHERE refresh_rate > 90 AND fast_charging > 60
+GROUP BY brand_name
+HAVING COUNT(*) > 1
+ORDER BY "avg_ram_capacity" DESC
+
+SELECT 
+	brand_name, 
+	AVG(price) AS "avg_price"
+FROM models
+WHERE has_5g = 'true'
+GROUP BY brand_name
+HAVING AVG(rating) > 70 AND COUNT(*) > 1
+
+SELECT * from ipl_data
+
+SELECT 
+	batter,
+	SUM(batsman_run) AS "total_run"
+FROM ipl_data
+GROUP BY batter
+ORDER BY "total_run" DESC
+
+SELECT batter, batsman_run FROM ipl_data WHERE batsman_run = 6
+
+SELECT 
+	batter,
+	SUM(batsman_run) AS "total_run"
+FROM ipl_data
+WHERE batsman_run = 6
+GROUP BY batter
+ORDER BY "total_run" DESC
+
+SELECT 
+	batter,
+	COUNT(*) AS "num_sixes"
+FROM ipl_data
+WHERE batsman_run = 6
+GROUP BY batter
+ORDER BY "num_sixes" DESC
+
+
+
+
+
+
+
+
+
+
