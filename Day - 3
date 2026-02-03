@@ -1,4 +1,31 @@
+-- ============================================================================
+-- PostgreSQL Day 3: Advanced GROUP BY & HAVING Clause
+-- ============================================================================
+-- Author: Debjit Das
+-- Topics: Multi-column GROUP BY, HAVING clause, Aggregate Functions, IPL Analytics
+-- ============================================================================
+
+
+-- ============================================================================
+-- SECTION 1: BASIC DATA RETRIEVAL
+-- ============================================================================
+
+-- View all records from the models table
+
 SELECT * FROM models
+
+
+-- ============================================================================
+-- SECTION 2: MULTI-COLUMN GROUP BY
+-- ============================================================================
+-- GROUP BY multiple columns creates groups based on unique combinations
+-- Useful for detailed breakdowns and cross-tabulations
+
+-- 2.1 Group by Brand and Processor
+-- Analyzes phone statistics for each brand-processor combination
+-- COUNT(*): Number of phones in each combination
+-- AVG(): Average camera resolution and rating per group
+-- ROUND(): Rounds decimal values for cleaner output
 
 SELECT 
 	brand_name,
@@ -9,6 +36,18 @@ SELECT
 FROM models
 GROUP BY brand_name, processor_brand
 
+
+-- ============================================================================
+-- SECTION 3: GROUP BY with WHERE (Pre-filtering)
+-- ============================================================================
+-- WHERE clause filters rows BEFORE grouping
+-- Only matching rows are included in the aggregation
+
+-- 3.1 NFC Phones without IR Blaster by Brand
+-- Filters: has_nfc = true AND has_ir_blaster = false
+-- Groups remaining rows by brand and counts them
+-- ORDER BY count DESC: Shows brands with most matching phones first
+
 SELECT 
 	brand_name,
 	COUNT(*) AS "count"
@@ -17,12 +56,29 @@ WHERE has_nfc = 'true' AND has_ir_blaster = 'false'
 GROUP BY brand_name
 ORDER BY count DESC
 
+
+-- 3.2 Samsung 5G Phones - NFC Price Comparison
+-- Analyzes how NFC affects price for Samsung 5G phones
+-- Groups by has_nfc to compare average prices
+-- Useful insight: Do NFC phones cost more?
+
 SELECT
 	has_nfc,
 	ROUND(AVG(price)) AS "price"
 FROM models
 WHERE brand_name = 'samsung' AND has_5g = 'true'
 GROUP BY has_nfc
+
+
+-- ============================================================================
+-- SECTION 4: GROUP BY with ORDER BY Aggregates
+-- ============================================================================
+-- You can ORDER BY aggregate function results
+-- Useful for ranking and finding top/bottom performers
+
+-- 4.1 Brands Ranked by Average Rating
+-- Shows all brands with their phone count and average rating
+-- Sorted by rating (highest first) to find best-rated brands
 
 SELECT 
 	brand_name,
@@ -31,6 +87,19 @@ SELECT
 FROM models
 GROUP BY brand_name
 ORDER BY avg_rating DESC
+
+
+-- ============================================================================
+-- SECTION 5: HAVING CLAUSE - Post-Aggregation Filtering
+-- ============================================================================
+-- HAVING: Filters groups AFTER aggregation (unlike WHERE which filters rows BEFORE)
+-- Use HAVING when you need to filter based on aggregate values
+-- 
+-- Execution Order: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY
+
+-- 5.1 Brands with Multiple Models (HAVING COUNT)
+-- HAVING COUNT(*) > 1: Only shows brands with more than 1 phone model
+-- Filters OUT brands with just 1 model in the database
 
 SELECT 
     brand_name,
@@ -41,6 +110,14 @@ GROUP BY brand_name
 HAVING COUNT(*) > 1
 ORDER BY "avg_rating" DESC;
 
+
+-- 5.2 Complex HAVING with Multiple Conditions
+-- Filters brands based on:
+--   - refresh_rate > 90 (smooth display)
+--   - fast_charging > 60 (fast charging)
+--   - COUNT(*) > 1 (multiple models)
+-- Shows average RAM capacity for qualifying brands
+
 SELECT 
 	brand_name,
 	ROUND(AVG(ram_capacity)) as "avg_ram_capacity"
@@ -50,6 +127,13 @@ GROUP BY brand_name
 HAVING COUNT(*) > 1
 ORDER BY "avg_ram_capacity" DESC
 
+
+-- 5.3 HAVING with Multiple Aggregate Conditions
+-- 5G phones grouped by brand with conditions:
+--   - AVG(rating) > 70 (good average rating)
+--   - COUNT(*) > 1 (multiple 5G models)
+-- Shows average price for qualifying brands
+
 SELECT 
 	brand_name, 
 	AVG(price) AS "avg_price"
@@ -58,7 +142,22 @@ WHERE has_5g = 'true'
 GROUP BY brand_name
 HAVING AVG(rating) > 70 AND COUNT(*) > 1
 
+
+-- ============================================================================
+-- SECTION 6: IPL DATA ANALYTICS
+-- ============================================================================
+-- Applying GROUP BY and aggregations to cricket data
+-- Ball-by-ball analysis for batting statistics
+
+-- 6.1 View All IPL Data
+
 SELECT * from ipl_data
+
+
+-- 6.2 Total Runs by Batter
+-- SUM(batsman_run): Adds up all runs scored by each batter
+-- Groups by batter name to get individual totals
+-- ORDER BY DESC: Top scorers first
 
 SELECT 
 	batter,
@@ -67,7 +166,18 @@ FROM ipl_data
 GROUP BY batter
 ORDER BY "total_run" DESC
 
+
+-- 6.3 View All Sixes (Preview)
+-- Shows all deliveries where batter hit a six
+-- Useful to verify data before aggregation
+
 SELECT batter, batsman_run FROM ipl_data WHERE batsman_run = 6
+
+
+-- 6.4 Total Runs from Sixes Only
+-- Filters only six-run deliveries
+-- SUM gives total runs scored via sixes by each batter
+-- Example: 2 sixes = 12 runs from sixes
 
 SELECT 
 	batter,
@@ -76,6 +186,12 @@ FROM ipl_data
 WHERE batsman_run = 6
 GROUP BY batter
 ORDER BY "total_run" DESC
+
+
+-- 6.5 Number of Sixes by Each Batter
+-- COUNT(*): Counts how many times each batter hit a six
+-- More intuitive than SUM for counting sixes
+-- Shows which batter is the best six-hitter
 
 SELECT 
 	batter,
@@ -84,6 +200,30 @@ FROM ipl_data
 WHERE batsman_run = 6
 GROUP BY batter
 ORDER BY "num_sixes" DESC
+
+
+-- ============================================================================
+-- KEY CONCEPTS SUMMARY:
+-- ============================================================================
+-- 1. WHERE vs HAVING:
+--    - WHERE: Filters individual rows BEFORE grouping
+--    - HAVING: Filters groups AFTER aggregation
+--
+-- 2. Multi-column GROUP BY:
+--    - Creates groups for each unique combination of columns
+--    - Useful for detailed cross-analysis
+--
+-- 3. Aggregate Functions:
+--    - COUNT(*): Count rows in group
+--    - SUM(): Total of numeric column
+--    - AVG(): Average of numeric column
+--    - ROUND(): Round decimal results
+--
+-- 4. Execution Order:
+--    FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY
+-- ============================================================================
+-- END OF DAY 3
+-- ============================================================================
 
 
 
